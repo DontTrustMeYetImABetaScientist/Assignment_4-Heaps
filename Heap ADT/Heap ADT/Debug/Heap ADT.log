@@ -1,0 +1,34 @@
+﻿  Heap.cpp
+  OldCode_Backups.cpp
+  test11.cpp
+c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\heap.cpp(88): error C2064: term does not evaluate to a function taking 1 arguments
+  c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\heap.cpp(84): note: while compiling class template member function 'void Heap<TestDataItem<int>,int,Greater<int>>::insert(const DataType &) throw(std::logic_error)'
+          with
+          [
+              DataType=TestDataItem<int>
+          ]
+  c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\test11.cpp(81): note: see reference to function template instantiation 'void Heap<TestDataItem<int>,int,Greater<int>>::insert(const DataType &) throw(std::logic_error)' being compiled
+          with
+          [
+              DataType=TestDataItem<int>
+          ]
+  c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\test11.cpp(54): note: see reference to class template instantiation 'Heap<TestDataItem<int>,int,Greater<int>>' being compiled
+c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\heap.cpp(149): error C2440: '=': cannot convert from 'TestDataItem<int>' to 'TestDataItem<int> *'
+  c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\heap.cpp(149): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
+  c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\heap.cpp(137): note: while compiling class template member function 'TestDataItem<int> Heap<TestDataItem<int>,int,Greater<int>>::remove(void) throw(std::logic_error)'
+  c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\test11.cpp(85): note: see reference to function template instantiation 'TestDataItem<int> Heap<TestDataItem<int>,int,Greater<int>>::remove(void) throw(std::logic_error)' being compiled
+c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\heap.cpp(150): error C2440: '=': cannot convert from 'TestDataItem<int>' to 'TestDataItem<int> *'
+  c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\heap.cpp(150): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
+c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\heap.cpp(151): error C2440: '=': cannot convert from 'TestDataItem<int>' to 'TestDataItem<int> *'
+  c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\heap.cpp(151): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
+c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\heap.cpp(154): error C2664: 'void Heap<TestDataItem<int>,int,Greater<int>>::percolateDown(DataType &,int)': cannot convert argument 1 from 'TestDataItem<int> *' to 'TestDataItem<int> &'
+          with
+          [
+              DataType=TestDataItem<int>
+          ]
+c:\users\jay\onedrive\school\csc 2201\assignment 4 - heap adt\heap adt\heap adt\heap.cpp(156): error C2664: 'void Heap<TestDataItem<int>,int,Greater<int>>::percolateDown(DataType &,int)': cannot convert argument 1 from 'TestDataItem<int> *' to 'TestDataItem<int> &'
+          with
+          [
+              DataType=TestDataItem<int>
+          ]
+  Generating Code...
