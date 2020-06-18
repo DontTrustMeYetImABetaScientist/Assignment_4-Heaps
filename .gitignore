@@ -1,0 +1,8 @@
+*.vcxproj
+*.filters
+*.obj
+*.PNG
+*.doc
+HeapADT\debug
+HeapADT\HeapADT\debug
+HeapADT\.vs

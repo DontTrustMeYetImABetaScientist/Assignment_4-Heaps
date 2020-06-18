@@ -17,6 +17,7 @@
 using namespace std;
 
 #include "Heap.cpp"
+#include "Heap.h"
 
 const int defMaxQueueSize = 10;   // Default maximum queue size
 
@@ -31,6 +32,12 @@ class PriorityQueue : public Heap<DataType>
     // Queue manipulation operations
     void enqueue ( const DataType &newDataItem );   // Enqueue data element
     DataType dequeue ();                            // Dequeue data element
+
+private:
+
+	int maxSize,			// Maximum number of elements in the PQ
+		size;				// Actual number of elements in the PQ
+	DataType *dataItems;	// Array containing the PQ elements
 };
 
 #endif

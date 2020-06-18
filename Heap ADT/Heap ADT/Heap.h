@@ -35,7 +35,6 @@ class Heap
 
     ~Heap ();											// Destructor
 
-
     void insert ( const DataType &newDataItem )			// Insert a data item
         throw ( logic_error );
 	DataType remove() throw (logic_error);				// Remove max priority element
@@ -46,10 +45,9 @@ class Heap
 
     void showStructure () const;						// Output the heap structure
 
-    void writeLevels () const;							// Output in level order (Prog Exer 3)
-
 	void percolateUp(const DataType&, int);				// Insert helper
-	void percolateDown(DataType&, int);					// Remove helper
+	//void percolateDown();								// Remove helper
+	//void leveler(int, int);							// writeLevels helper
 
   private:
 

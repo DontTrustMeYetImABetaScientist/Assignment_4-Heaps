@@ -7,7 +7,7 @@
 //-------------------------------------------------------------------------------------------
 //
 //	"Swapping" or "Percolate" up or down is from the perspective of the new data item
-//	Thus:
+//	Thus:3
 //		1. Swapping UP -> Enqueue when new item is GREATER than its parent
 //		2. Swapping DOWN -> Dequeue when new item is LESS than a child
 //
@@ -43,27 +43,22 @@ Heap<DataType, KeyType, Comparator>::Heap(const Heap& other)
 
 template < typename DataType, typename KeyType, typename Comparator >
 Heap<DataType, KeyType, Comparator>& Heap<DataType, KeyType, Comparator>::operator=(const Heap& other)
-
-// If the other stack is empty, we only need to clear our current stack
-
 {
 	if (dataItems != &other)							// Avoid self-assignment
 	{
-		if (other.isEmpty())							// No data to copy, just clear current array
+		if (!other.isEmpty())							// No data to copy, just clear current array
 		{
-			clear();
-		}
-		else
-		{
-			top = other.top;
-			for (int i = 0; i <= other.top; i++)
+			size = other.size;
+			for (int i = 0; i < other.size; i++)
 			{
 				dataItems[i] = other[i];				// Deep copy data at each index of Heap other
 			}
 		}
+		else
+			clear();									// Heap other is empty, clear current Heap
 	}
 
-	return *this;										// Return a reference to the newly-populated or -cleared array
+	return *this;								// Return a reference to the newly-populated or -cleared array
 }
 
 
@@ -81,22 +76,34 @@ void Heap<DataType, KeyType, Comparator>::insert(const DataType& newDataItem) th
 // we reduce the swap assignments to 2 (vs 3 using a temp var) 
 // by "pretending" that the newDataItem is at index size and compare it to index size - 1
 
+// Comparator true when a is less than b
+
+// Given i = size
+// Parent Index: Floor((i - 1) / 2) [OR] (int)((i - 1) / 2)
+
 {
+	// Intermediate variables to make if-conditional easier to read:
+	int parentIndex = (int)((size - 1) / 2);
+	bool parentIsLess = newDataItem.getPriority() > dataItems[parentIndex].getPriority();
+	
+
 	try
 	{
-		//if (newDataItem.getPriority() > dataItems[size - 1].getPriority())
-		if (newDataItem(dataItems[size - 1]))
-			percolateUp(newDataItem, size - 1);
+		if (size == 0)
+			dataItems[0] = newDataItem;					// Heap is empty, add newDataItem as root
+		else if (parentIsLess)
+			percolateUp(newDataItem, size);				// Heap property broken, call resursive helper
 		else
 			dataItems[size] = newDataItem;				// Add the new item to the top of the heap (i.e. the first empty array index)
+
 		size++;											// Update size
 	}
 	catch (logic_error e)
 	{
 		size--;											// Set size back equal to its correct value
-		// dataItems[size] == nullptr  (Needed?)
-		cout << "Insert: FULL Heap" << endl;
 		e.what();
+
+		cout << "Insert: FULL Heap" << endl;
 	}
 }
 
@@ -104,92 +111,80 @@ void Heap<DataType, KeyType, Comparator>::insert(const DataType& newDataItem) th
 template < typename DataType, typename KeyType, typename Comparator >
 void Heap<DataType, KeyType, Comparator>::percolateUp(const DataType& newDataItem, int currentIndex)
 
-// Given i (size - 1):
-// Parent: Floor(i / 2) [OR] (int)(i / 2)
+// Given i, size 0 indicates empty heap:
+// Parent Index: Floor((i - 1) / 2) [OR] (int)((i - 1) / 2)
+
+// Comparator true when a is less than b
+
 // In this Lab's use-case where i is unsigned, Floor and int casting are interchangable
-// (Heap Lecture, slides 146 - 169)
+// (Heap Lecture, Slides 146 - 169)
 
 {
-	int parentIndex;
+	// Intermediate variables to make conditionals easier to read
+	int parentIndex = (int)((currentIndex - 1) / 2);						
+	bool parentIsLess = newDataItem.getPriority() > dataItems[parentIndex].getPriority();
+	
+	do
+	{
+		dataItems[currentIndex] = dataItems[parentIndex];				// Store parent's data in the current index
+		dataItems[parentIndex] = newDataItem;							// Swap UP new data to parent's array position
 
-	parentIndex = (int)(currentIndex / 2);								// Cast to int to ensure floor/integer division
-	dataItems[currentIndex] = dataItems[parentIndex];					// Swap down
+		currentIndex = parentIndex;										// Update the current index
+		parentIndex = (int)((currentIndex - 1) / 2);					// Update the new parent index
 
-	if (newDataItem > dataItems[currentIndex] && currentIndex != 0)			// Check for broken heap property and if root
-		percolateUp(newDataItem, parentIndex);								// Continue up heap to check validity
-
-	dataItems[parentIndex] = newDataItem;								// Once parent is bigger than newDataItem OR root, store newDataItem
+		parentIsLess = newDataItem.getPriority() > dataItems[parentIndex].getPriority();		// Check if parent is still less
+	} while (parentIsLess && currentIndex != 0);
 }
 
 
-// !! CHECK: Replace try/catch with if(empty)throw ??
+
 template < typename DataType, typename KeyType, typename Comparator >
 DataType Heap<DataType, KeyType, Comparator>::remove() throw (logic_error)
 
-// Similar "pretending" method as insert.
-// By taking the data at index size - 1 and pretending it's at index[0]
-// we can compare it to its "children" at indices 1 and 2
-// (Heap lecture, slides 146 - 170)
-//
-// By decrementing size before returning, we effectively erase the former item at index size - 1
+// By decrementing size before returning, we effectively erase the former item at index [size - 1],
 // since the next future enqueue will overwrite whatever was stored previously (i.e. dataItems[size] = newData).
 
+// Use of a while loop allows for checking of both parent v child values as well as if children exist (incld which is larger)
+
 {
-	DataType highestPriority;					// Create a local var to hold the data item while fixing broken heap occurs
+	DataType highestPriority;
+	DataType newData;
 
-	DataType* newRoot;							// The "new" root (See: "pretending" note in function notes above)
-	DataType* leftChild;						// Root's Left Child value
-	DataType* rightChild;						// Root's Right Child value
+	int currentIndex;											// Placeholder for indices being worked on
+	bool heapPropertyBroken;									// Indicator if children are larger than the new root
 
-
-	try
-	{
-		highestPriority = dataItems[0];
-
-		newRoot = dataItems[size - 1];			
-		leftChild = dataItems[1];				
-		rightChild = dataItems[2];				
-
-		if (newRoot < leftChild)				// Left child greater
-			percolateDown(leftChild, 1);
-		else if (newRoot < rightChild)			// Right child greater
-			percolateDown(rightChild, 2);
-	}
-	catch (logic_error e)
-	{
-		size++;
-
-		cout << "Remove: EMPTY Heap" << endl;
-		e.what();
-	}
+	if (this->isEmpty())
+		throw logic_error("Remove: EMPTY Heap");				// No items to remove
 	
-	size--;										// Update size
+	highestPriority = dataItems[0];
+	newData = dataItems[size - 1];
 
-	return highestPriority;		// CHECK: What to return in the event of exception thrown ??
-}
+	heapPropertyBroken = true;
+	currentIndex = 0;														// Start at the root (i.e. index 0)
 
-
-// TODO: Clean
-template<typename DataType, typename KeyType, typename Comparator>
-void Heap<DataType, KeyType, Comparator>::percolateDown(DataType& current, int currentIndex)
-{
-	int leftIndex = 2 * currentIndex + 1;
-	int rightIndex = 2 * currentIndex + 2;
-
-	DataType* leftChild = dataItems[leftIndex];
-	DataType* rightChild = dataItems[rightIndex];
-	
-
-	if (current < leftChild)						// Left child greater
+	// Fix possible broken heap property (up to the largest array index if needed)
+	while (heapPropertyBroken && currentIndex < size)						
 	{
-		dataItems[currentIndex] = leftChild;
-		percolateDown(leftChild, leftIndex);
+		// Right child largest => focus on index [(i * 2) + 2] instead of [(i * 2) + 1]
+		if (dataItems[currentIndex].getPriority() < dataItems[currentIndex + 1].getPriority() && currentIndex < (size - 1))
+			currentIndex++;
+
+		// The new root's data is the largest, heap validity restored
+		if (newData.getPriority() >= dataItems[currentIndex].getPriority())										
+		{
+			heapPropertyBroken = false;
+		}
+		else
+		{
+			dataItems[(currentIndex - 1) / 2] = dataItems[currentIndex];		// Heap still invalid, continue fix
+			currentIndex = 2 * currentIndex + 1;
+		}
 	}
-	else if (current < rightChild)					// Right child greater
-	{
-		dataItems[currentIndex] = rightChild;
-		percolateDown(rightChild, rightIndex);
-	}
+
+	dataItems[(currentIndex - 1) / 2] = newData;								// Final index in focus is correct position for the new root data
+	size--;																		// Update size to reflect removal of 1 item
+
+	return highestPriority;														// Return the highest priority item stored at start of fxn
 }
 
 
@@ -203,9 +198,7 @@ void Heap<DataType, KeyType, Comparator>::clear()
 template < typename DataType, typename KeyType, typename Comparator >
 bool Heap<DataType, KeyType, Comparator>::isEmpty() const
 {
-	// CHECK: Second correct?
-	//return size == 0;
-	return size;
+	return size == 0;
 }
 
 
@@ -213,18 +206,6 @@ template < typename DataType, typename KeyType, typename Comparator >
 bool Heap<DataType, KeyType, Comparator>::isFull() const
 {
 	return size == maxSize;
-}
-
-
-template < typename DataType, typename KeyType, typename Comparator >
-void Heap<DataType, KeyType, Comparator>::writeLevels() const
-
-// Given i, root = 0, (size == 0) == empty array:
-// Parent: (int)(i / 2) => floor/integer division
-
-{
-
-	return;
 }
 
 
@@ -254,6 +235,7 @@ void Heap<DataType, KeyType, Comparator>::showStructure() const
 	}
 }
 
+
 template < typename DataType, typename KeyType, typename Comparator >
 void Heap<DataType, KeyType, Comparator>::showSubtree(int index, int level) const
 
@@ -278,3 +260,4 @@ void Heap<DataType, KeyType, Comparator>::showSubtree(int index, int level) cons
 		showSubtree(2 * index + 1, level + 1);        // Output left subtree
 	}
 }
+

@@ -6,11 +6,16 @@
 //
 //--------------------------------------------------------------------
 
+#include "config.h"
+
+#if !LAB11_PQ
+
 #include <iostream>
 #include <string>
 #include <cctype>
 
 using namespace std;
+
 
 #include "Heap.cpp"
 #include "config.h"
@@ -148,3 +153,5 @@ void printHelp()
     cout << "  Q    : Quit the test program" << endl;
     cout << endl;
 }
+
+#endif

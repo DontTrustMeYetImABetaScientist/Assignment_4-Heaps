@@ -6,6 +6,10 @@
 //
 //--------------------------------------------------------------------
 
+#include "config.h"
+
+#if LAB11_PQ
+
 #include <iostream>
 #include <cctype>
 #include "PriorityQueue.cpp"
@@ -117,3 +121,4 @@ void printHelp() {
     cout << endl;
 }
 
+#endif
